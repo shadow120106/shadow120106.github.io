@@ -177,10 +177,24 @@
     }
 
     window.onload = () => {
-        getServerInfo();
-        intervalId = setInterval(getServerInfo, 30000);
-    };
+        const wallpapers = [
+                './backgrounds/1.jpg',
+                './backgrounds/2.jpg',
+                './backgrounds/3.png',
+                './backgrounds/4.png',
+                './backgrounds/5.jpg',
+                './backgrounds/6.jpg',
+                './backgrounds/7.jpg',
+                './backgrounds/8.png',
+                './backgrounds/9.png',
+                './backgrounds/10.png'
+            ];
+            const randomIndex = Math.floor(Math.random() * wallpapers.length);
+            const randomWallpaper = wallpapers[randomIndex];
+            document.body.style.backgroundImage = `url('${randomWallpaper}')`;
 
+            getServerInfo();
+        };
     function copyServerIp() {
         const serverIp = 'mc363.top';
         navigator.clipboard.writeText(serverIp).then(function() {
