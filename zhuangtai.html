@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarEra 服务器状态</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <style>
+        .rounded-corners {
+            border-radius: 15px;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .bg-primary {
+            background-color: #1e293b;
+        }
+
+        .bg-secondary {
+            background-color: rgba(118, 155, 201, 0.24);
+        }
+
+        .text-highlight {
+            color: #00ccff;
+        }
+
+        .text-secondary {
+            color: #9ca3af;
+        }
+
+        .navbar {
+            background-color: #1e293b;
+            padding: 1rem;
+        }
+
+        .navbar-nav a {
+            color: #fff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+        }
+
+        .navbar-nav a:hover {
+            color: #00ccff;
+        }
+
+        .status-container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            background-color: rgba(118, 155, 201, 0.24);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #000000;
+        }
+    </style>
+</head>
+
+<body class="bg-primary text-white">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="logo.jpg" alt="StarEra Logo" style="width: 40px; height: 40px; margin-right: 10px;">
+                <a class="text-2xl text-highlight" href="index.html">StarEra</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto w-100 justify-content-end clearfix">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">主页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="gl.html">管理组</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="gonggao.html">公告</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="zhuangtai.html">服务器状态</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="container mx-auto mt-8 fade-in">
+        <section class="bg-secondary p-6 mb-8 rounded-corners shadow-lg">
+            <h2 class="text-3xl font-bold mb-4 text-highlight">服务器信息</h2>
+            <div class="status-container">
+                <h3 class="text-highlight">服务器状态：</h3>
+                <p id="server-status" class="text-secondary">加载中...</p>
+                <h3 class="text-highlight">在线人数：</h3>
+                <p id="online-players" class="text-secondary">加载中...</p>
+                <h3 class="text-highlight">服务器信息：</h3>
+                <p id="server-info" class="text-secondary">加载中...</p>
+                <h3 class="text-highlight">服务器QQ群：</h3>
+                <p id="server-qq" class="text-secondary">加载中...</p>
+                <h3 class="text-highlight">服务器IP：</h3>
+                <p id="server-ip" class="text-secondary">加载中...</p>
+                <h3 class="text-highlight">服务器开发：</h3>
+                <p id="server-developers" class="text-secondary">加载中...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-secondary p-4 text-center rounded-corners fade-in">
+        <p class="text-secondary">&copy; 2024 StarEra 服务器. 版权所有.</p>
+    </footer>
+
+    <a href="#" class="back-to-top fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <i class="lni-arrow-up"></i>
+    </a>
+
+    <div id="preloader">
+        <div class="loader" id="loader-1"></div>
+    </div>
+
+    <script>
+        function removeColorCodes(text) {
+            return text.replace(/§[0-9a-fklmnor]/gi, '');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('https://mcapi.us/server/status?ip=mc363.top&port=25565')
+                .then(response => response.json())
+                .then(data => {
+                    const statusElement = document.getElementById('server-status');
+                    const playersElement = document.getElementById('online-players');
+                    const infoElement = document.getElementById('server-info');
+                    const qqElement = document.getElementById('server-qq');
+                    const ipElement = document.getElementById('server-ip');
+                    const developersElement = document.getElementById('server-developers');
+
+                    if (data.online) {
+                        statusElement.textContent = '在线';
+                        playersElement.textContent = `当前在线人数: ${data.players.now}`;
+                        infoElement.textContent = `MOTD: ${removeColorCodes(data.motd)}`;
+
+                        const qqText = data.players.sample[0].name;
+                        const ipText = data.players.sample[1].name;
+                        const developersText = data.players.sample[2].name;
+
+                        qqElement.textContent = removeColorCodes(qqText.split('：')[1]);
+                        ipElement.textContent = removeColorCodes(ipText.split('：')[1]);
+                        developersElement.textContent = removeColorCodes(developersText.split('：')[1]);
+                    } else {
+                        statusElement.textContent = '离线';
+                        playersElement.textContent = '无法获取在线人数';
+                        infoElement.textContent = '无法获取服务器信息';
+                        qqElement.textContent = '无法获取服务器信息';
+                        ipElement.textContent = '无法获取服务器信息';
+                        developersElement.textContent = '无法获取服务器信息';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('server-status').textContent = '获取服务器状态失败';
+                    document.getElementById('online-players').textContent = '无法获取在线人数';
+                    document.getElementById('server-info').textContent = '无法获取服务器信息';
+                    document.getElementById('server-qq').textContent = '无法获取服务器信息';
+                    document.getElementById('server-ip').textContent = '无法获取服务器信息';
+                    document.getElementById('server-developers').textContent = '无法获取服务器信息';
+                    console.error('Error fetching server status:', error);
+                });
+        });
+    </script>
+
+</body>
+
+</html>
